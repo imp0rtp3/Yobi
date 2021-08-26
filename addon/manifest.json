@@ -1,13 +1,13 @@
 {
 
   "manifest_version": 2,
-  "name": "jony",
+  "name": "Yobi",
   "version": "0.0.1",
 
   "description": "secure the web",
 
   "background": {
-     "scripts":["jony.js"]
+     "scripts":["yobi.js"]
    },
   
   "browser_action": {
