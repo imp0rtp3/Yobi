@@ -56,3 +56,7 @@ This version is still very basic and should serve as a prototype only. Please op
 ## Contact and Feedback
 
 Contact me via twitter - [@imp0rtp3](https://twitter.com/imp0rtp3/)
+
+## Screenshots
+
+!(Yobi alerts Dashboard)[https://github.com/imp0rtp3/Yobi/blob/main/imgs/scr1.png]

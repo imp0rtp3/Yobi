@@ -4,8 +4,6 @@ PASS_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 # Path for the Git rule
 GIT_RULES_PATH = "./rules_repo"
 
-# URL of the github rules directory
-SIGBASE_URL = "https://github.com/imp0rtp3/js-yara-rules/"
 
 # Directory where malicious pages are saved
 MALICIOUS_OUTPUT_PATH = 'suspicious_scripts'
@@ -17,6 +15,11 @@ WS_PORT = 8392
 IS_WSS = True
 WS_KEY = 'key.pem'
 WS_CERT = 'cert.pem'
+
+USE_GIT = True
+
+# URL of the github rules directory
+SIGBASE_URL = "https://github.com/imp0rtp3/js-yara-rules/"
 
 # If set, searches for additional YARA rules in CUSTOM_RULES_PATH
 USE_CUSTOM_RULES = False
