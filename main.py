@@ -66,7 +66,7 @@ class ContentReceiver(WebsocketServer):
 
 	def client_left(self, client, server):
 		print("[**] Client left")
-		
+
 	def new_msg(self, client, server, msg):
 		'''
 			new messsage callback funciton, try to load it as json and put is queue for yarascanner to process
@@ -134,21 +134,32 @@ class YaraScanner(object):
 			This funciton clones a repository to local (or updates it) and then just returns
 			a string with all the rules in its 'yara' directory
 		'''
-
-		if not os.path.exists(config.GIT_RULES_PATH):
-			os.mkdir(config.GIT_RULES_PATH)
-		if not os.path.exists(os.path.join(config.GIT_RULES_PATH, 'yara')):
-			print("[**] Cloning JS YARA rules Repo")
-			Repo.clone_from(config.SIGBASE_URL, config.GIT_RULES_PATH)
-		else:			
-			repo = Repo(config.GIT_RULES_PATH)
-			origin = repo.remote(name='origin')
-			origin.pull()
 		all_rules = ''
-		for i in os.listdir(os.path.join(config.GIT_RULES_PATH, 'yara')):
-			if i.endswith('.yar'):
-				with open(os.path.join(config.GIT_RULES_PATH, 'yara', i), 'r') as yar_file:
-					all_rules += yar_file.read() + '\n'
+		if config.USE_GIT:
+
+			if not os.path.exists(config.GIT_RULES_PATH):
+				os.mkdir(config.GIT_RULES_PATH)
+			if not os.path.exists(os.path.join(config.GIT_RULES_PATH, 'yara')):
+				print("[**] Cloning JS YARA rules Repo")
+				Repo.clone_from(config.SIGBASE_URL, config.GIT_RULES_PATH)
+			else:			
+				repo = Repo(config.GIT_RULES_PATH)
+				origin = repo.remote(name='origin')
+				origin.pull()
+			all_rules = ''
+			for i in os.listdir(os.path.join(config.GIT_RULES_PATH, 'yara')):
+				if i.endswith('.yar'):
+					with open(os.path.join(config.GIT_RULES_PATH, 'yara', i), 'r') as yar_file:
+						all_rules += yar_file.read() + '\n'
+
+		if config.USE_CUSTOM_RULES:
+			if not os.path.exists(config.CUSTOM_RULES_PATH):
+				print("[***] USE_CUSTOM_RULES set but CUSTOM_RULES_PATH not found")
+				return all_rules
+			for i in os.listdir(config.CUSTOM_RULES_PATH):
+				if i.endswith('.yar'):
+					with open(os.path.join(config.CUSTOM_RULES_PATH, i), 'r') as yar_file:
+						all_rules += yar_file.read() + '\n'
 		return all_rules
 
 	def get_msg_queue(self):

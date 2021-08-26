@@ -17,3 +17,7 @@ WS_PORT = 8392
 IS_WSS = True
 WS_KEY = 'key.pem'
 WS_CERT = 'cert.pem'
+
+# If set, searches for additional YARA rules in CUSTOM_RULES_PATH
+USE_CUSTOM_RULES = False
+CUSTOM_RULES_PATH = ''
