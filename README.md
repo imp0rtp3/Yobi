@@ -12,7 +12,7 @@ Yobi requires python3 and and right now supports only firefox and other Gecko-ba
 
 ```
 git clone https://github.com/imp0rtp3/Yobi/
-cd Yobi-master/
+cd Yobi/
 ./install.sh
 ```
 
