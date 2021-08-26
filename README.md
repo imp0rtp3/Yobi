@@ -35,7 +35,7 @@ python3 setup_cert.py
 
 ## YARA rules
 
-YARA rules are fetched from a repository of JS rules I created: [https://github.com/imp0rtp3/js-yara-rules/](js-yara-rules). The repo consists of free JS rules I found on the internet and some I wrote myself. Feel free to create pull requests for additional rellevant rules. 
+YARA rules are fetched from a repository of JS rules I created: [js-yara-rules](https://github.com/imp0rtp3/js-yara-rules/). The repo consists of free JS rules I found on the internet and some I wrote myself. Feel free to create pull requests for additional rellevant rules. 
 The repository can be changed in `config.py`
 
 Additionally, you can add your own rules by setting `USE_CUSTOM_RULES=True` and `CUSTOM_RULES_PATH` to a path containing your yara rules in `config.py`.
@@ -55,4 +55,4 @@ This version is still very basic and should serve as a prototype only. Please op
 
 ## Contact and Feedback
 
-Contact me via twitter - [https://twitter.com/imp0rtp3/](@imp0rtp3)
+Contact me via twitter - [@imp0rtp3](https://twitter.com/imp0rtp3/)
