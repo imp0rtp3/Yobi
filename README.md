@@ -17,9 +17,14 @@ cd Yobi-master/
 ### Manual Installation
 
 1. Run:
+<<<<<<< HEAD
 ```
 cd Yobi-master/
 pip install -r requirements.txt
+=======
+```cd Yobi-master/
+pip install -r requirements.txt`
+>>>>>>> 5963e2a70e15f4ff2a08ba99f42762ef55f10e5b
 # Create certificate and key used for the WSS communicaitons
 openssl req -x509 -batch -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes 
 python3 setup_cert.py
