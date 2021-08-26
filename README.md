@@ -11,6 +11,7 @@ Yobi requires python3 and and right now supports only firefox and other Gecko-ba
 ### Automatic Installation (Linux Only)
 
 ```
+git clone https://github.com/imp0rtp3/Yobi/
 cd Yobi-master/
 ./install.sh
 ```
@@ -19,7 +20,8 @@ cd Yobi-master/
 
 1. Run:
 ```
-cd Yobi-master/
+git clone https://github.com/imp0rtp3/Yobi/
+cd Yobi/
 pip install -r requirements.txt
 # Create certificate and key used for the WSS communicaitons
 openssl req -x509 -batch -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes 
@@ -59,4 +61,4 @@ Contact me via twitter - [@imp0rtp3](https://twitter.com/imp0rtp3/)
 
 ## Screenshots
 
-!(Yobi alerts Dashboard)[https://github.com/imp0rtp3/Yobi/blob/main/imgs/scr1.png]
+![Yobi alerts Dashboard](https://raw.githubusercontent.com/imp0rtp3/Yobi/main/imgs/scr1.png)
