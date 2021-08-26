@@ -9,20 +9,19 @@ Yobi requires python3 and and right now supports only firefox and other Gecko-ba
 
 ### Automatic Installation (Linux Only)
 
-`
+```
 cd Yobi-master/
 ./install.sh
-` 
+```
 
 ### Manual Installation
 1. Run:
-`
-cd Yobi-master/
-pip install -r requirements.txt
+```cd Yobi-master/
+pip install -r requirements.txt`
 # Create certificate and key used for the WSS communicaitons
 openssl req -x509 -batch -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes 
 python3 setup_cert.py
-`
+```
 2. Open Firefox and type in the address bar `https://127.0.0.1:8392`. Click "Advanced"-> "Accept the Risk and Continue"
 
 ## Running
