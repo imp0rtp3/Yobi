@@ -1,0 +1,6 @@
+py7zr
+plyara
+git+https://github.com/Pithikos/python-websocket-server
+secrets
+GitPython
+yara-python==4.1.0

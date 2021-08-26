@@ -1,0 +1,27 @@
+html, body {
+  width: 400px;
+}
+
+.hits {
+  width:  90%;
+  margin: 0% 5%;
+}
+
+.trash_icon, .copy_icon{
+  cursor: pointer;
+  width:  5%;
+  height:  5%;
+}
+
+.description{
+  display:none;
+  margin-left: 10px;
+  padding-bottom: 2%;
+}
+
+.vt_button {
+  margin-bottom:  20%;
+}
+.hits_title{
+  text-align: center
+}

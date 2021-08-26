@@ -1,0 +1,28 @@
+{
+
+  "manifest_version": 2,
+  "name": "jony",
+  "version": "0.0.1",
+
+  "description": "secure the web",
+
+  "background": {
+     "scripts":["jony.js"]
+   },
+  
+  "browser_action": {
+    "browser_style": true,
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/emoji-laughing.svg",
+      "32": "icons/emoji-laughing.svg"
+    }
+  },
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "notifications",
+    "storage",
+    "<all_urls>"
+  ]
+}
