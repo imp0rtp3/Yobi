@@ -7,7 +7,7 @@ class MatchesUpdater{
 	constructor(){
 		let that = this
 		this.current_matches_len = 0;
-		let stoarge_prom = browser.storage.local.get("rule_matches", items => this.storage_listener(items));
+		browser.storage.local.get("rule_matches", items => this.storage_listener(items));
 		this.storage_change_listener = browser.storage.onChanged.addListener(
 			function(c,a){
 				that.browser_storage_change(c,a, that);
@@ -21,7 +21,7 @@ class MatchesUpdater{
 		});
 	};
 
-	storage_listener = function(item) {
+	storage_listener (item) {
 		var matches = item['rule_matches'];
 		if (matches){
 			this.current_matches_len = matches.length;
@@ -32,7 +32,7 @@ class MatchesUpdater{
 		console.log(`[***] Error: ${error}`);
 	};
 
-	browser_storage_change = function(changes, areaName, self) {
+	browser_storage_change(changes, areaName, self) {
 		if(areaName != "local" || !changes["rule_matches"])
 		{
 			return;
@@ -44,7 +44,7 @@ class MatchesUpdater{
 		self.add_rule_matches(changes["rule_matches"].newValue.slice(old_len));
 	};
 
-	remove_matches = function(){
+	remove_matches(){
 		$("#no-hits").toggle();
 		$("#hits").toggle();
 		$("#hits").empty();
@@ -52,7 +52,7 @@ class MatchesUpdater{
 
 	};
 
-	add_rule_matches = function(matches) {
+	add_rule_matches(matches) {
 		$("#no-hits").css({"display": "none"});
 		$("#hits").css({"display": "block"});
 		for (var i = 0; i < matches.length; i++) {
