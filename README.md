@@ -13,6 +13,7 @@ Yobi requires python3 and and right now supports only firefox and other Gecko-ba
 ```
 git clone https://github.com/imp0rtp3/Yobi/
 cd Yobi/
+chmod +x install.sh
 ./install.sh
 ```
 
@@ -28,12 +29,11 @@ openssl req -x509 -batch -newkey rsa:4096 -keyout key.pem -out cert.pem -days 36
 python3 setup_cert.py
 ```
 2. Open Firefox and type in the address bar `https://127.0.0.1:8392`. Click "Advanced"-> "Accept the Risk and Continue"
+3. open https://addons.mozilla.org/firefox/downloads/file/3831405/yobi-0.0.1-fx.xpi to install the Yobi add-on signed by mozilla.
 
 ## Running
 
 1. run `python3 main.py`
-2. open `about:debugging#/runtime/this-firefox` in firefox, click "Load Temporary Add-on...", browse to Yobi-master/addon and select `manifest.json`
-
 
 ## YARA rules
 
