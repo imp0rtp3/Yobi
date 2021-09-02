@@ -1,0 +1,39 @@
+{
+
+  "manifest_version": 2,
+  "name": "Yobi",
+  "version": "0.1",
+
+  "description": "Yara Based Detection Engine for web browsers",
+
+  "background": {
+     "page":"Yobi.html"
+   },
+  
+  "browser_action": {
+    "browser_style": true,
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/emoji-laughing.svg",
+      "32": "icons/emoji-laughing.svg"
+    }
+  },
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "notifications",
+    "storage",
+    "downloads",
+    "<all_urls>"
+  ],
+  "content_security_policy": "script-src 'self' 'sha256-mlhRIuI1L2yvZjzLr1ruxKOhxybExil/apGVHVo2o8I=' 'unsafe-eval'; object-src 'self';",
+  "options_ui": {
+    "page": "options.html"
+  },
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{b5cd734c-ce82-44fa-88c9-c700486eba4c}"
+    }
+  }
+}

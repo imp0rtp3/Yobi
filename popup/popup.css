@@ -1,0 +1,80 @@
+html, body {
+  width: 400px;
+}
+
+.hits, .no-hits {
+  width:  90%;
+  margin: 0% 5%;
+}
+.no-hits {
+  padding: 10% 0%;
+}
+.trash_icon, .copy_icon{
+  cursor: pointer;
+  width:  5%;
+  height:  5%;
+}
+
+.trash_icon{
+  float:  right;
+  margin-right: 6%;
+  margin-top: 1.5%;
+}
+
+.description{
+  display:none;
+  word-wrap: break-word;
+  padding-left: 3%;
+  padding-bottom: 2%;
+  margin-bottom:  2%;
+  border-radius: 0px 0px 20px 20px;
+  padding-bottom: 15%;
+  padding-top: 2%;
+}
+
+
+.desc_button {
+  margin-top:  3%;
+  width: 20%;
+  height:  10%;
+  float:  right;
+  margin-right:  6.6666%;
+  margin-left:  6.66666%;
+}
+
+
+.hits_title{
+  text-align: center;
+  display: none;
+}
+.no-hits {
+  text-align: center;
+}
+
+.hit_item{
+  cursor: pointer;
+}
+
+
+.w3-theme-l5 {color:#000 !important; background-color:#fbeff1 !important}
+.w3-theme-l4 {color:#000 !important; background-color:#f3cbd1 !important}
+.w3-theme-l3 {color:#000 !important; background-color:#e796a2 !important}
+.w3-theme-l2 {color:#fff !important; background-color:#db6274 !important}
+.w3-theme-l1 {color:#fff !important; background-color:#ce2f47 !important}
+.w3-theme-d1 {color:#fff !important; background-color:#8a1f2f !important}
+.w3-theme-d2 {color:#fff !important; background-color:#7b1c2a !important}
+.w3-theme-d3 {color:#fff !important; background-color:#6c1825 !important}
+.w3-theme-d4 {color:#fff !important; background-color:#5c1520 !important}
+.w3-theme-d5 {color:#fff !important; background-color:#4d111a !important}
+
+.w3-theme-light {color:#000 !important; background-color:#fbeff1 !important}
+.w3-theme-dark {color:#fff !important; background-color:#4d111a !important}
+.w3-theme-action {color:#fff !important; background-color:#4d111a !important}
+
+.w3-theme {color:#fff !important; background-color:#9b2335 !important}
+.w3-text-theme {color:#9b2335 !important}
+.w3-border-theme {border-color:#9b2335 !important}
+
+.w3-hover-theme:hover {color:#fff !important; background-color:#6c1825 !important}
+.w3-hover-text-theme:hover {color:#5c1520 !important}
+.w3-hover-border-theme:hover {border-color:#9b2335 !important}
