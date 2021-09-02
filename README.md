@@ -53,4 +53,6 @@ Contact me via twitter - [@imp0rtp3](https://twitter.com/imp0rtp3/)
 
 ## Screenshots
 
-![Yobi alerts Dashboard](https://raw.githubusercontent.com/imp0rtp3/Yobi/main/imgs/scr1.png)
+![Yobi alerts Dashboard Closed](https://raw.githubusercontent.com/imp0rtp3/Yobi/main/screens/scr1.png)
+
+![Yobi alerts Dashboard Opened](https://raw.githubusercontent.com/imp0rtp3/Yobi/main/screens/scr2.png)
