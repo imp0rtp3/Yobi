@@ -70,7 +70,7 @@ class YaraScanner
 			this.raw_yara_rules =  all_rules;
 			return true;
 		}
-		console.log('Problem Fetching Rules!!');
+		console.log('[***] Problem Fetching Rules - Bad Response Code');
 		await this.get_rules_from_ls();
 		return false;	
 	}
@@ -91,10 +91,9 @@ class YaraScanner
 			This function is actually running the rules.
 		*/
 		while(scan_queue.length > 0){
-			let matches_dict = {};
 			const scan_item = scan_queue.shift();
 			const content_sha256 = utils.toHexString(new sjcl.hash.sha256.hash(scan_item[1]));
-			console.log(content_sha256);
+
 			// Check if the file was already scanned, for efficiency
 			if(!this.documents_scanned[content_sha256]){
 				// Here the yara actually runs
@@ -108,11 +107,9 @@ class YaraScanner
                     	}
                     }
                 }
-                console.log(yara_matches.matchedRules.size());
                 for (let i = 0; i < yara_matches.matchedRules.size(); i++) {
                 	let metadata = {};
                 	const rule = yara_matches.matchedRules.get(i);
-                	console.log(`${scan_item[0]}: ${rule.ruleName}`);
                 	for (var j = 0; j < rule.metadata.size() ; j++) {
                 		metadata[rule.metadata.get(j).identifier] =  rule.metadata.get(j).data;
                 	} 

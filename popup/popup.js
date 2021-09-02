@@ -78,7 +78,6 @@ class MatchesUpdater{
 			{
 				$link.html(`<b><h3>${host}</h3></b> - <i>${matches[sha256].file_name}</i>`);
 			}
-			console.log(matches[sha256]);
 			var desc_html = `<b>Matches: </b>${Object.keys(matches[sha256].matches).join(', ')}<br>
 			<b>Sha256: </b><div id="hash_${sha256}">${sha256}</div>`;
 			desc_html += `<a href="https://www.virustotal.com/gui/file/${sha256}" role="button" class="w3-hover-text-theme w3-theme-l1 desc_button btn" >VT</a>`;
