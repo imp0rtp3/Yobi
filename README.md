@@ -1,55 +1,47 @@
 # Yobi
 
 ***Yara Based Detection for web browsers***
+Yobi is a basic firefox extension which allows to run public or private YARA rules on all scripts and pages rendered by the browser.
+Yobi saves files that trigger its rules and allows further inspection of them.
+
+Yobi is completly serverless - no telemtry or other information is collected.
 
 ## System Requirements
 
-Yobi requires python3 and and right now supports only firefox and other Gecko-based browsers.
-
 ## Installation
 
-### Automatic Installation (Linux Only)
-
-```
-git clone https://github.com/imp0rtp3/Yobi/
-cd Yobi/
-chmod +x install.sh
-./install.sh
-```
+Yobi has been submitted to Mozilla for verification, as soo as they sign it I will put here the link to the add-on installation
 
 ### Manual Installation
 
-1. Run:
-```
-git clone https://github.com/imp0rtp3/Yobi/
-cd Yobi/
-pip install -r requirements.txt
-# Create certificate and key used for the WSS communicaitons
-openssl req -x509 -batch -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes 
-python3 setup_cert.py
-```
-2. Open Firefox and type in the address bar `https://127.0.0.1:8392`. Click "Advanced"-> "Accept the Risk and Continue"
-3. open https://addons.mozilla.org/firefox/downloads/file/3831405/yobi-0.0.1-fx.xpi to install the Yobi add-on signed by mozilla.
-
-## Running
-
-1. run `python3 main.py`
+1.clone the repo.
+2. Go to `about:debugging` in firefox or other Gecko based browser, click "This Firefox"-> Load Temporary Add on and select manifest.json.
+3. Done!
 
 ## YARA rules
 
 YARA rules are fetched from a repository of JS rules I created: [js-yara-rules](https://github.com/imp0rtp3/js-yara-rules/). The repo consists of free JS rules I found on the internet and some I wrote myself. Feel free to create pull requests for additional rellevant rules. 
 The repository can be changed in `config.py`
 
-Additionally, you can add your own rules by setting `USE_CUSTOM_RULES=True` and `CUSTOM_RULES_PATH` to a path containing your yara rules in `config.py`.
+You can change the yara rules the extension runs under Add-ons->Yobi->Preferences
 
 ## Yobi's Inner Workings
 
-Yobi is separated into two components - a browser extension and a python script.
-They communicate through WSS protocol. Self-signed certificates need to be created in order for the protocol to function. The alternative of using the unencrypted websocket protocol would allow anyone intercepting loopback traffic to intercept decrypted https content of the browsetr.
+### Dependencies
+Yobi Depends on the following libraries:
+1. [libyara-wasm](https://github.com/mattnotmitt/libyara-wasm) - A porting of the whole YARA engine to wasm
+2. [SJCL](https://github.com/bitwiseshiftleft/sjcl) - JS encryption library used for calculating sha256.
+3. [jszip](https://github.com/Stuk/jszip) - A compact JS library to create zip files. used [PR 6969](https://github.com/Stuk/jszip/pull/696) that added the option to encrypt the archive.
+4. Bootstrap
+5. jQuery
 
-### Why not run everything in the browser?
+### Execution Flow
 
-I am not aware of any maintained Yara engine able to run in the browser, through webassembly or JS.
+Yobi uses the Gecko `webrequests` feature `browser.webRequest.onBeforeRequest` which enables it to intercept any request and response. Yobi saves the buffer and forward it. The YARA rules run asynchronously to that and alert whether a match is found.
+
+### Why doesn't Yobi block the malicious scripts?
+
+Preventing any script to run before running YARA rules on it would create a significant delay for the user.= 
 
 ## Continuing Development
 
