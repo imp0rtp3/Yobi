@@ -6,9 +6,11 @@ html, body {
   width:  90%;
   margin: 0% 5%;
 }
+
 .no-hits {
   padding: 10% 0%;
 }
+
 .trash_icon, .copy_icon{
   cursor: pointer;
   width:  5%;
