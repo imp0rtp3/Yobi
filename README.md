@@ -1,31 +1,44 @@
 # Yobi
 
+<img align="right" src="https://raw.githubusercontent.com/imp0rtp3/Yobi/main/icons/icon.png" alt="drawing" width="200"/>
+
+[<h2>Install Yobi Here</h2>](https://addons.mozilla.org/en-US/firefox/addon/yobi/)
+
 ***Yara Based Detection for web browsers***
+
 Yobi is a basic firefox extension which allows to run public or private YARA rules on all scripts and pages rendered by the browser.
 Yobi saves files that trigger its rules and allows further inspection of them.
 
 Yobi is completly serverless - no telemtry or other information is collected.
 
-## System Requirements
+## Manual Installation
 
-## Installation
-
-Yobi has been submitted to Mozilla for verification, as soo as they sign it I will put here the link to the add-on installation
-
-### Manual Installation
-
-1.clone the repo.
+1. clone the repo.
 2. Go to `about:debugging` in firefox or other Gecko based browser, click "This Firefox"-> Load Temporary Add on and select manifest.json.
 3. Done!
+
+## What can Yobi do?
+
+1. Capture any file requested by the web browser and identified as malicious by a YARA rule.
+2. Use custom YARA rules.
+3. Download the malicious files   (as zip, default password is "infected").
+4. Query the file hash in VirusTotal.
+
 
 ## YARA rules
 
 YARA rules are fetched from a repository of JS rules I created: [js-yara-rules](https://github.com/imp0rtp3/js-yara-rules/). The repo consists of free JS rules I found on the internet and some I wrote myself. Feel free to create pull requests for additional rellevant rules. 
-The repository can be changed in `config.py`
 
-You can change the yara rules the extension runs under Add-ons->Yobi->Preferences
+You can change the yara rules the extension uses under Add-ons->Yobi->Preferences
+
+Right now, YARA version 4.0.5 is used. libyara-wasm will be updated shortly and Yobi will then run the latest YARA verions.
 
 ## Yobi's Inner Workings
+
+### Execution Flow
+
+Yobi uses the Gecko `webrequests` feature `browser.webRequest.onBeforeRequest` which enables it to intercept any request and response. Yobi saves the buffer and forward it. The YARA rules run asynchronously to that and alert whether a match is found.
+
 
 ### Dependencies
 Yobi Depends on the following libraries:
@@ -34,10 +47,6 @@ Yobi Depends on the following libraries:
 3. [jszip](https://github.com/Stuk/jszip) - A compact JS library to create zip files. used [PR 6969](https://github.com/Stuk/jszip/pull/696) that added the option to encrypt the archive.
 4. Bootstrap
 5. jQuery
-
-### Execution Flow
-
-Yobi uses the Gecko `webrequests` feature `browser.webRequest.onBeforeRequest` which enables it to intercept any request and response. Yobi saves the buffer and forward it. The YARA rules run asynchronously to that and alert whether a match is found.
 
 ### Why doesn't Yobi block the malicious scripts?
 
