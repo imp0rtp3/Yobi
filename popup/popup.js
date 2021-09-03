@@ -8,12 +8,12 @@ function setClipboard(text) {
 class MatchesUpdater{
 
 	constructor(){
-		let that = this;
+		let self = this;
 		this.matches_dict = {};
 		browser.storage.local.get("rule_matches", items => this.storage_listener(items));
 		this.storage_change_listener = browser.storage.onChanged.addListener(
 			function(c,a){
-				that.browser_storage_change(c,a);
+				self.browser_storage_change(c,a);
 			}
 		);
 		$(window).on("beforeunload", function(){
@@ -26,11 +26,12 @@ class MatchesUpdater{
 
 	storage_listener (item) {
 		var matches = item['rule_matches'];
-		if (Object.keys(matches).length){
+		if (matches && Object.keys(matches).length){
 			this.matches_dict = item["rule_matches"];
 			this.add_rule_matches(matches);
 		}
 	};
+
 	onErrorStorage(error) {
 		console.log(`[***] Error: ${error}`);
 	};
@@ -39,7 +40,7 @@ class MatchesUpdater{
 		if(areaName != "local" || !changes["rule_matches"])	{
 			return;
 		}
-		if(Object.keys(changes["rule_matches"].newValue).length == 0) {
+		if(!changes["rule_matches"].newValue || Object.keys(changes["rule_matches"].newValue).length === 0) {
 			this.remove_matches();
 			return;
 		}
@@ -53,11 +54,10 @@ class MatchesUpdater{
 
 	remove_matches(){
 		$("#no-hits").show();
-		$("#hits").hide();
-		$("#hits").empty();
+		$("#hits").hide().empty();
 		$(".hits_title").hide();
-		this.matches_dict = {};
 		browser.browserAction.setIcon({path: "../icons/emoji-laughing.svg"});
+		this.matches_dict = {};
 	};
 
 	add_rule_matches(matches) {
@@ -93,7 +93,7 @@ class MatchesUpdater{
 			$("#hits").append($sig_block);
 			$cp_img.clone().appendTo(`#hash_${sha256}`).on('click', function(e)
 			{
-				 	setClipboard($(this).parent().text());
+				 setClipboard($(this).parent().text());
 			});
 			$(`#download_sample${sha256}`).on('click', function (e)
 			{
@@ -122,7 +122,8 @@ class MatchesUpdater{
 		const filename = (this.matches_dict[sha256].file_name || DEF_MAL_NAME) + ".dnr";
 		const zip_pass = (await browser.storage.local.get("settings")).settings.archive_password;
 
-		await $.getScript("../jszip_pr696.min.js");
+		// Script loaded only here to prevent it slowing the popup when it loads 
+		await $.getScript("../dependencies/jszip_pr696.min.js");
 		var zip = new JSZip();
 		zip.file(filename, encoder.encode(obj));
 		zip.generateAsync({type:"blob", password: zip_pass , encryptStrength: 3,}).then(

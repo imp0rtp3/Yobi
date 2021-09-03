@@ -5,8 +5,11 @@ const DEF_RULES_URL = 'https://raw.githubusercontent.com/imp0rtp3/js-yara-rules/
 const MAL_EMOJI_PATH = "icons/emoji-frown-fill.svg";
 const MAL_ALERT_PATH = "icons/virus.png";
 
-class utils {
+// used only in the listener function, declared and set here to prevent it from 
+// being created anew every time the function is called
+let decoder = new TextDecoder("utf-8");
 
+class utils {
 
 	static sleep(ms) {
 		return new Promise(resolve => setTimeout(resolve, ms));
@@ -46,7 +49,7 @@ class YaraScanner
 
 		this.yara_worker_loop = setInterval(function(x){
 			self.yara_worker();
-		}, 100);
+		}, 1000);
 	}
 	
 	async get_yara_rules(){
@@ -56,13 +59,14 @@ class YaraScanner
 	*/
 		let response;
 		const rules_url = (await browser.storage.local.get("settings")).settings.yara_rules_url || DEF_RULES_URL;
+		console.log('asd');
 		try
 		{
 			response = await fetch(rules_url);
 		}
 		catch(e)
 		{
-			console.log(`[***] Problem Fetching Rules: ${e.message}`);
+			messenger.report_error(`[***] Problem Fetching Rules: ${e.message}`);
 			await this.get_rules_from_ls();	
 			return false;
 		}
@@ -71,7 +75,7 @@ class YaraScanner
 			browser.storage.local.set({"raw_rules": this.raw_yara_rules});
 			return true;
 		}
-		console.log('[***] Problem Fetching Rules - Bad Response Code');
+		messenger.report_error('[***] Problem Fetching Rules - Bad Response Code');
 		await this.get_rules_from_ls();
 		return false;	
 	}
@@ -80,13 +84,14 @@ class YaraScanner
 		/*
 			Get rules from localstorage - used only if the rules site is not accessible
 		*/
+		let self = this
 		await browser.storage.local.get("raw_rules", function(item){
-			if(item['raw_rules'].length == 0){
-				clearInterval(this.yara_worker_loop)
-				console.log("[***] Error - no rules saved in Localstorage, stopping Yobi!");
+			if(!item['raw_rules'].length){
+				clearInterval(self.yara_worker_loop)
+				messenger.report_error("[***] Error - no rules saved in Localstorage, stopping Yobi!");
 				throw Exception;
 			}
-			this.raw_yara_rules = item["raw_rules"];
+			self.raw_yara_rules = item["raw_rules"];
 		});
 	}
 
@@ -96,7 +101,6 @@ class YaraScanner
 		*/
 		while(scan_queue.length > 0){
 			const scan_item = scan_queue.shift();
-			const url = scan_item[0];
 			const content_sha256 = utils.toHexString(sjcl.hash.sha256.hash(scan_item[1]));
 
 			// Check if the file was already scanned, for efficiency
@@ -108,6 +112,10 @@ class YaraScanner
 				// Here the yara actually runs
 				const yara_matches = this.yara_eng.run(scan_item[1], this.raw_yara_rules);
 				
+				if(yara_matches.matchedRules.size() === 0)
+					continue;
+
+				this.documents_scanned[content_sha256]['is_match'] = true;
 				// Check for errors - TODO: run one time and not every time
 				if (yara_matches.compileErrors.size() > 0) {
                     for (let i = 0; i < yara_matches.compileErrors.size(); i++) {
@@ -119,41 +127,44 @@ class YaraScanner
                 }
 
                 // Convert matchedRules libyara-wasm Object to a nice dictionary.
-                for (let i = 0; i < yara_matches.matchedRules.size(); i++) {
+                for (let i = yara_matches.matchedRules.size() - 1; i >= 0; i--) {
                 	let metadata = {};
                 	const rule = yara_matches.matchedRules.get(i);
-                	for (let j = 0; j < rule.metadata.size() ; j++) {
+                	for (let j = rule.metadata.size() - 1; j >= 0 ; j--) {
                 		metadata[rule.metadata.get(j).identifier] =  rule.metadata.get(j).data;
                 	} 
 					this.documents_scanned[content_sha256]['matches'][rule.ruleName] =  metadata;
 				}
 			}
-			if(Object.keys(this.documents_scanned[content_sha256]['matches']).length == 0){
-				this.documents_scanned[content_sha256]['is_match'] = false;
+			else if(!this.documents_scanned[content_sha256]['is_match']){
 				continue;
 			}
-			this.documents_scanned[content_sha256]['is_match'] = true;
-			this.documents_scanned[content_sha256]['urls'].push(url)
-			const file_path = (new URL(url).pathname) || '';
-			let filename = '';
-			if(file_path.length > 2) {
-				// Get the last directory or file in the URL.
-				// If it's https://example.com/hello/world/ - get 'world' and not '' 
-				filename = file_path.split('/').slice(-1)[0] || file_path.split('/').slice(-2)[0];
-			}
-			const message = {
-				'type': MSG_MATCH,
-				'data':
-				{
-					'url': url, 
-					'file_name' : filename,
-					'matches': this.documents_scanned[content_sha256]['matches'],
-					'first_time':this.documents_scanned[content_sha256]['urls'].length == 1, 
-					'sha256': content_sha256,
+			{
+				// Scoped so not every loop iterations the below variables will be declared 
+				// (because of hoisting)
+				const url = scan_item[0];
+				const file_path = (new URL(url).pathname) || '';
+				let filename = '';
+				this.documents_scanned[content_sha256]['urls'].push(url)				
+				if(file_path.length > 2) {
+					// Get the last directory or file in the URL.
+					// If it's https://example.com/hello/world/ - get 'world' and not '' 
+					filename = file_path.split('/').slice(-1)[0] || file_path.split('/').slice(-2)[0];
 				}
-			};
-			messenger.new_message(message);
-			this.save_file(scan_item[1], content_sha256);
+				const message = {
+					'type': MSG_MATCH,
+					'data':
+					{
+						'url': url, 
+						'file_name' : filename,
+						'matches': this.documents_scanned[content_sha256]['matches'],
+						'first_time':this.documents_scanned[content_sha256]['urls'].length === 1, 
+						'sha256': content_sha256,
+					}
+				};
+				messenger.new_message(message);
+				this.save_file(scan_item[1], content_sha256);
+			}
 		}
 	}
 
@@ -164,7 +175,7 @@ class YaraScanner
 		}
 	
 		function onError(error) {
-	  		console.log(`[***] Error Saving File: ${error}`);
+	  		messenger.report_error(`[***] Error Saving File: ${error}`);
 		}
 
 		let dict = {};
@@ -206,9 +217,15 @@ class messenger{
 				browser.storage.local.get("errors", function(items)
 				{
 						const rm = (items['errors'] || []).concat(data.data);
-						browser.storage.local.set({"rule_matches": rm});		
+						browser.storage.local.set({"errors": rm});		
 				});
+				break;
 		}
+	}
+
+	static report_error(message){
+		let error_msg = {type: MSG_ERROR, data: {'message' : message} };
+		messenger.new_message(error_msg);
 	}
 }
 
@@ -216,26 +233,44 @@ class messenger{
 function listener(details) {
 	/* This function is responsible for intercepting all rellevant requests, 
 			putting it in a filequeue and also forwarding it.
+		It is called thousands of times and any delay here makes pages load slower, thus 
+		performance is preferred over readability.
 	*/
 	let filter = browser.webRequest.filterResponseData(details.requestId);
-	let decoder = new TextDecoder("utf-8");
-	let encoder = new TextEncoder();
-	let data = [];
+	let raw_data = [];
 
 	filter.ondata = event => {
-		data.push(decoder.decode(event.data, {stream: true}));
+		filter.write(event.data);
+		raw_data.push(event.data);
 	};
+
 	filter.onstop = event => {
-		// TODO - check if we need to decode it really
-		data.push(decoder.decode());
-		const str = data.join("");
-		filter.write(encoder.encode(str));
 		filter.close();
-		scan_queue.push([details.url, str]);
+		if(raw_data.length === 1)
+		{
+			// Most likely scenario
+			scan_queue.push([details.url, decoder.decode(raw_data[0])]);
+		}
+		else if(raw_data.length > 1)
+		{
+			scan_queue.push([details.url, raw_data.map(x => decoder.decode(x,{stream: true})).join("")]);
+		}
 	};
 }
 
 function init_yobi(){
+
+	// Register the listener intercepting all interesting files.
+	// Called first so not to miss any pages loading.
+	browser.webRequest.onBeforeRequest.addListener(
+		listener,	
+		{
+			"urls":["<all_urls>"],
+			"types": ["main_frame", "script", "object", "sub_frame", "other"]
+		},
+		["blocking"]
+	);
+
 
 	browser.storage.local.get("settings", async function(item){
 		if(!item['settings'])
@@ -247,24 +282,14 @@ function init_yobi(){
 				}
 			});
 		}
+
+		// Start Yarascanner only when settings are initialized.
+		// "Module" is the name of the libyara-wasm module. 
 		new Module().then(async Module => {
 			let YS = new YaraScanner(Module);
 		});
 	});
 
-	// "Module" is the name of the libyara-wasm module. 
-	
-
-	// Register the listener intercepting all interesting files.
-	browser.webRequest.onBeforeRequest.addListener(
-		listener,	
-		{
-			"urls":["<all_urls>"],
-			"types": ["main_frame", "script", "object", "sub_frame", "other"]
-		},
-		["blocking"]
-	);
-	
 	// Check if matches have already been found and change icon accordingly
 	browser.storage.local.get("rule_matches", function(item){
 		if(item['rule_matches'] && Object.keys(item['rule_matches']).length > 0){
