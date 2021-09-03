@@ -18,7 +18,7 @@ class utils {
 	static toHexString(byteArray) {
 	// Converts a bytearray from jscl hash function to hexadecimal string
 	  return Array.from(byteArray, function(byte) {
-	    return ('00000000' + (byte > -1 ? (byte & 0x7FFFFFFF) : 0x100000000 + byte ).toString(16)).slice(-8);
+		return ('00000000' + (byte > -1 ? (byte & 0x7FFFFFFF) : 0x100000000 + byte ).toString(16)).slice(-8);
 	  }).join('');
 	}
 
@@ -47,11 +47,27 @@ class YaraScanner
 		// Yara parser for extracting metadata
 		this.get_yara_rules()
 
+		this.check_for_yara_errors();
+
 		this.yara_worker_loop = setInterval(function(x){
 			self.yara_worker();
 		}, 1000);
 	}
 	
+	async check_for_yara_errors(){
+		const yara_matches =  this.yara_eng.run("test", this.raw_yara_rules);
+		if (yara_matches.compileErrors.size() === 0) {
+			return false;
+		}
+		for (let i = yara_matches.compileErrors.size()-1; i >= 0; i--) {
+			const compileError = yara_matches.compileErrors.get(i);
+			if (!compileError.warning) {
+				messenger.report_error(`Error on line ${compileError.lineNumber}: ${compileError.message} in YARA rules`);
+				throw new OperationError(`Error on line ${compileError.lineNumber}: ${compileError.message}`);
+			}
+		}
+	}
+
 	async get_yara_rules(){
 	/*
 		This funciton clones a repository to local (or updates it) and then just returns
@@ -59,7 +75,6 @@ class YaraScanner
 	*/
 		let response;
 		const rules_url = (await browser.storage.local.get("settings")).settings.yara_rules_url || DEF_RULES_URL;
-		console.log('asd');
 		try
 		{
 			response = await fetch(rules_url);
@@ -116,23 +131,14 @@ class YaraScanner
 					continue;
 
 				this.documents_scanned[content_sha256]['is_match'] = true;
-				// Check for errors - TODO: run one time and not every time
-				if (yara_matches.compileErrors.size() > 0) {
-                    for (let i = 0; i < yara_matches.compileErrors.size(); i++) {
-                        const compileError = yara_matches.compileErrors.get(i);
-                        if (!compileError.warning) {
-                            throw new OperationError(`Error on line ${compileError.lineNumber}: ${compileError.message}`);
-                    	}
-                    }
-                }
-
-                // Convert matchedRules libyara-wasm Object to a nice dictionary.
-                for (let i = yara_matches.matchedRules.size() - 1; i >= 0; i--) {
-                	let metadata = {};
-                	const rule = yara_matches.matchedRules.get(i);
-                	for (let j = rule.metadata.size() - 1; j >= 0 ; j--) {
-                		metadata[rule.metadata.get(j).identifier] =  rule.metadata.get(j).data;
-                	} 
+				
+				// Convert matchedRules libyara-wasm Object to a nice dictionary.
+				for (let i = yara_matches.matchedRules.size() - 1; i >= 0; i--) {
+					let metadata = {};
+					const rule = yara_matches.matchedRules.get(i);
+					for (let j = rule.metadata.size() - 1; j >= 0 ; j--) {
+						metadata[rule.metadata.get(j).identifier] =  rule.metadata.get(j).data;
+					} 
 					this.documents_scanned[content_sha256]['matches'][rule.ruleName] =  metadata;
 				}
 			}
@@ -175,7 +181,7 @@ class YaraScanner
 		}
 	
 		function onError(error) {
-	  		messenger.report_error(`[***] Error Saving File: ${error}`);
+			messenger.report_error(`[***] Error Saving File: ${error}`);
 		}
 
 		let dict = {};
