@@ -26,6 +26,7 @@ class MatchesUpdater{
 
 	storage_listener (item) {
 		var matches = item['rule_matches'];
+		console.log(matches);
 		if (matches && Object.keys(matches).length){
 			this.matches_dict = item["rule_matches"];
 			this.add_rule_matches(matches);
@@ -79,7 +80,7 @@ class MatchesUpdater{
 				$link.html(`<b><h3>${host}</h3></b> - <i>${matches[sha256].file_name}</i>`);
 			}
 			var desc_html = `<b>Matches: </b>${Object.keys(matches[sha256].matches).join(', ')}<br>
-			<b>Sha256: </b><div id="hash_${sha256}">${sha256}</div>`;
+			<b>Sha256: </b><div id="hash_${sha256}">${sha256} </div>`;
 			desc_html += `<a href="https://www.virustotal.com/gui/file/${sha256}" role="button" class="w3-hover-text-theme w3-theme-l1 desc_button btn" >VT</a>`;
 			desc_html += `<button type="button" id="download_sample${sha256}" class="w3-hover-text-theme w3-theme-l1 desc_button download_button btn">Sample</button>`;
 			desc_html += `<button type="button" id="download_details${sha256}" style="float: right;" class="w3-hover-text-theme w3-theme-l1 desc_button download_button btn">Details</button>`;

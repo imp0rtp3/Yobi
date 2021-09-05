@@ -45,16 +45,14 @@ class YaraScanner
 		// Queue filled by Yarascanner of messages that the contentReceiver needs to send
 		this._messages_qu = [];
 		// Yara parser for extracting metadata
-		this.get_yara_rules()
-
-		this.check_for_yara_errors();
+		this.get_yara_rules().then(x => {self.check_for_yara_errors();});
 
 		this.yara_worker_loop = setInterval(function(x){
 			self.yara_worker();
 		}, 1000);
 	}
 	
-	async check_for_yara_errors(){
+	check_for_yara_errors(){
 		const yara_matches =  this.yara_eng.run("test", this.raw_yara_rules);
 		if (yara_matches.compileErrors.size() === 0) {
 			return false;
