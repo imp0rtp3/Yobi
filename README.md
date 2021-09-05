@@ -1,6 +1,6 @@
 # Yobi
 
-<img align="right" src="https://raw.githubusercontent.com/imp0rtp3/Yobi/main/icons/icon.png" alt="drawing" width="200"/>
+<img align="right" src="https://raw.githubusercontent.com/imp0rtp3/Yobi/main/icons/icon128.png" alt="drawing" width="200"/>
 
 [<h2>Install Yobi Here</h2>](https://addons.mozilla.org/en-US/firefox/addon/yobi/)
 
